@@ -1,0 +1,380 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Movie Booking</title>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: var(--tg-theme-bg-color, #10131c);
+            color: var(--tg-theme-text-color, #ffffff);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: auto;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .header h2 {
+            font-size: 25px;
+            margin-bottom: 7px;
+        }
+
+        .header p {
+            color: var(--tg-theme-hint-color, #999);
+            font-size: 14px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #444958;
+            border-radius: 10px;
+            background: var(--tg-theme-secondary-bg-color, #202532);
+            color: var(--tg-theme-text-color, white);
+            font-size: 15px;
+            outline: none;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .option {
+            padding: 14px 8px;
+            text-align: center;
+            border: 1px solid #444958;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .option.selected {
+            border: 2px solid var(--tg-theme-button-color, #3390ec);
+            background: rgba(51, 144, 236, 0.15);
+        }
+
+        .ticket-options {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .ticket {
+            padding: 12px 5px;
+            text-align: center;
+            border: 1px solid #444958;
+            border-radius: 9px;
+            cursor: pointer;
+        }
+
+        .ticket.selected {
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, white);
+            border-color: transparent;
+        }
+
+        .rules {
+            padding: 14px;
+            background: var(--tg-theme-secondary-bg-color, #202532);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 2;
+        }
+
+        .rules div {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, white);
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .note {
+            text-align: center;
+            color: var(--tg-theme-hint-color, #999);
+            font-size: 12px;
+            margin-top: 14px;
+        }
+
+        .error {
+            color: #ff6565;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h2>🎬 Movie Booking</h2>
+        <p>Choose your movie and booking preferences.</p>
+    </div>
+
+    <form id="bookingForm">
+
+        <div class="field">
+            <label>Booking Type</label>
+
+            <div class="options">
+                <div class="option selected"
+                     data-type="RUNNING">
+                    🎥 Running Movies
+                </div>
+
+                <div class="option"
+                     data-type="UPCOMING">
+                    🗓 Upcoming Movies
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="movie">Movie Name</label>
+            <input
+                type="text"
+                id="movie"
+                placeholder="Enter movie name"
+                required
+                minlength="2"
+                maxlength="100">
+        </div>
+
+        <div class="field">
+            <label for="location">City / Area</label>
+            <input
+                type="text"
+                id="location"
+                placeholder="Example: Coimbatore"
+                required
+                minlength="2"
+                maxlength="100">
+        </div>
+
+        <div class="field">
+            <label>Number of Tickets</label>
+
+            <div class="ticket-options">
+                <div class="ticket selected" data-count="1">1</div>
+                <div class="ticket" data-count="2">2</div>
+                <div class="ticket" data-count="3">3</div>
+                <div class="ticket" data-count="4">4</div>
+                <div class="ticket" data-count="5">5</div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Preferred Showtime</label>
+
+            <div class="options">
+                <div class="option selected" data-time="Morning">
+                    🌅 Morning
+                </div>
+
+                <div class="option" data-time="Afternoon">
+                    ☀ Afternoon
+                </div>
+
+                <div class="option" data-time="Night">
+                    🌙 Night
+                </div>
+            </div>
+        </div>
+
+        <div class="rules">
+            <div>
+                <span>Minimum ticket price</span>
+                <strong>Above ₹100</strong>
+            </div>
+
+            <div>
+                <span>Seat preference</span>
+                <strong>Consecutive only</strong>
+            </div>
+
+            <div>
+                <span>Snacks page</span>
+                <strong>Skip if possible</strong>
+            </div>
+        </div>
+
+        <div id="error" class="error"></div>
+
+        <button type="submit" class="submit" id="submitBtn">
+            SUBMIT BOOKING REQUEST
+        </button>
+
+        <p class="note">
+            Payment will be completed manually.
+        </p>
+
+    </form>
+
+</div>
+
+<script>
+    const tg = window.Telegram?.WebApp;
+
+    if (tg) {
+        tg.ready();
+        tg.expand();
+    }
+
+    let bookingType = "RUNNING";
+    let ticketCount = 1;
+    let showTime = "Morning";
+
+    // Read the requested booking type from the launch URL
+    const params = new URLSearchParams(window.location.search);
+    const initialType = params.get("type");
+
+    if (initialType === "UPCOMING") {
+        bookingType = "UPCOMING";
+    }
+
+    function selectOption(selector, element) {
+        document.querySelectorAll(selector).forEach(item => {
+            item.classList.remove("selected");
+        });
+
+        element.classList.add("selected");
+    }
+
+    // Booking type selection
+    document.querySelectorAll("[data-type]").forEach(option => {
+        option.addEventListener("click", () => {
+            selectOption("[data-type]", option);
+            bookingType = option.dataset.type;
+        });
+    });
+
+    // Ticket selection
+    document.querySelectorAll("[data-count]").forEach(option => {
+        option.addEventListener("click", () => {
+            selectOption("[data-count]", option);
+            ticketCount = Number(option.dataset.count);
+        });
+    });
+
+    // Showtime selection
+    document.querySelectorAll("[data-time]").forEach(option => {
+        option.addEventListener("click", () => {
+            selectOption("[data-time]", option);
+            showTime = option.dataset.time;
+        });
+    });
+
+    // Apply initial booking type from URL
+    if (bookingType === "UPCOMING") {
+        const upcoming = document.querySelector(
+            '[data-type="UPCOMING"]'
+        );
+
+        selectOption("[data-type]", upcoming);
+    }
+
+    // Submit booking request
+    document.getElementById("bookingForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const movie = document.getElementById("movie")
+                .value.trim();
+
+            const location = document.getElementById("location")
+                .value.trim();
+
+            const error = document.getElementById("error");
+            const button = document.getElementById("submitBtn");
+
+            error.textContent = "";
+
+            if (movie.length < 2 || location.length < 2) {
+                error.textContent =
+                    "Please enter a valid movie and location.";
+                return;
+            }
+
+            const booking = {
+                bookingType: bookingType,
+                movie: movie,
+                location: location,
+                tickets: ticketCount,
+                showTime: showTime
+            };
+
+            button.disabled = true;
+            button.textContent = "Submitting...";
+
+            if (tg && tg.initData) {
+
+                tg.sendData(JSON.stringify(booking));
+
+            } else {
+
+                // Browser preview for local development
+                console.log("Booking request:", booking);
+
+                alert(
+                    "Form preview successful!\n\n"
+                    + JSON.stringify(booking, null, 2)
+                );
+
+                button.disabled = false;
+                button.textContent = "SUBMIT BOOKING REQUEST";
+            }
+        });
+</script>
+
+</body>
+</html>

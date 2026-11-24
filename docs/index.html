@@ -264,6 +264,11 @@
 <script>
     const tg = window.Telegram?.WebApp;
 
+    console.log("Telegram object:", window.Telegram);
+console.log("WebApp object:", tg);
+console.log("InitData:", tg?.initData);
+console.log("Platform:", tg?.platform);
+
     if (tg) {
         tg.ready();
         tg.expand();
